@@ -61,7 +61,7 @@ class TopBar extends Component {
         if(this.state.Log_active==="LOGIN"){
             axios.post("/login", user)
                 .then((result) => {
-                     console.log(result.data)
+                     console.log("HIIIII")
                      result.data.login ? this.props.Login( result.data.login, result.data.profile) : this.props.Login( result.data.login  , { username   : "", src        : "", email      : "", status     : "", location   : ""})
                      this.props.Papers(result.data.papers)
 
