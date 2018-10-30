@@ -1,38 +1,61 @@
 import React, { Component } from "react";
-
+import * as actionTypes from '../../../../store/actions';
 import { connect } from 'react-redux';
 
 
 import Personal from "./Personal";
 import WorkSheet from "./WorkSheet";
+import Messenger from "./Messenger";
 
 class Profile extends Component {
       constructor(props) {
         super(props);
 
         this.state={
-                door:"personal_session"
+                port:"A",
+                login:false
         }
-        this.Active = this.Active.bind(this);
+        
   }
 
 
-        Active(e){
-            let id=e.target.id[e.target.id.length-1];
+  componentWillMount() {
+
+
+
+    this.setState({
+
+        port:this.props.port,
+        login:this.props.login
+  
+    })
+   
+
+  }
+
+
+
+ componentWillReceiveProps(nextProps) {
+    
+    if(nextProps.port!==this.state.port || nextProps.login!==this.state.login)
+        this.setState({
+            port:nextProps.port,
+            login:nextProps.login
             
-            this.setState({
-                door:id==="1" ? "personal_session": "worksheet_session"
-            })
-        }
+        })
+
+
+    }
 
 
 
   render(){
 
-            if(this.props.login){
+            if(this.state.login){
                  
-                var showPersonal = this.state.door === "personal_session" ? {display:"block"}: {display:"none"};
-                var showWorksheet = this.state.door === "worksheet_session" ? {display:"block"}: {display:"none"};
+                var showPersonal = this.state.port === "A" ? {display:"block"}: {display:"none"};
+                var showWorksheet = this.state.port === "B" ? {display:"block"}: {display:"none"};
+                var showMessenger = this.state.port === "C" ? {display:"block"}: {display:"none"};
 
                 return (
                     <div className="wrapper_r">
@@ -41,20 +64,26 @@ class Profile extends Component {
                       <div className="card w-75 " style={{marginLeft:"10vw"}}>
                                 <div className="card-header " >
                                     <ul className="nav nav-tabs card-header-tabs ">
-                                            <li id="li1" className="nav-item " onClick={this.Active}>
-                                                <a id="ai1" className={this.state.door === "personal_session" ? "nav-link active text-primary": "nav-link text-secondary" } >Personal</a>
+                                            <li id="li1" className="nav-item " onClick={()=> this.props.ChangePort("A")}>
+                                                <a id="ai1" className={this.state.port === "A" ? "nav-link active text-primary": "nav-link text-secondary" } >Personal</a>
                                             </li>
-                                            <li id="li2"className="nav-item"   onClick={this.Active}> 
-                                                <a id="ai2" className={this.state.door === "worksheet_session" ? "nav-link active text-primary": "nav-link text-secondary" }  >Worksheets</a>
+                                            <li id="li2"className="nav-item"   onClick={()=> this.props.ChangePort("B")}> 
+                                                <a id="ai2" className={this.state.port === "B" ? "nav-link active text-primary": "nav-link text-secondary" }  >Worksheets</a>
+                                            </li>
+                                            <li id="li3"className="nav-item"   onClick={()=> this.props.ChangePort("C")}> 
+                                                <a id="ai3" className={this.state.port === "C" ? "nav-link active text-primary": "nav-link text-secondary" }  >Messenger</a>
                                             </li>
                                     </ul>
                                 </div>
-                                <div id="personal_session" className="card-body"  style={showPersonal}>
-                                         <Personal />
-                                </div>
-                                <div id="worksheet_session" className="card-body" style={showWorksheet}>
-                                         <WorkSheet/>
-                                </div>
+                                    <div id="personal_session" className="card-body"  style={showPersonal}>
+                                            <Personal />
+                                    </div>
+                                    <div id="worksheet_session" className="card-body" style={showWorksheet}>
+                                            <WorkSheet/>
+                                    </div>
+                                    <div id="messenger_session" className="card-body" style={showMessenger}>
+                                           <Messenger/>
+                                    </div>
                                 </div>
                   </div>
                 );
@@ -87,15 +116,18 @@ class Profile extends Component {
 
     const mapStateToProps = state => {
       return {
-            login: state.profile.login
+            login: state.profile.login,
+            port: state.profile.port
       };
     };
     
     const mapDispatchToProps = dispatch => {
-      return {
+        return {
     
-      };
+            ChangePort     : (value) => dispatch({type: actionTypes.CHANGEPORT , value: value}),
+            LoginLinks     : (value) => dispatch({type: actionTypes.LOGINLINKS , value: value})
+        };
     };
     
-    export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+    export default connect(mapStateToProps,mapDispatchToProps)(Profile);
   

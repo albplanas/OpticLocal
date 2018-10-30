@@ -39,35 +39,38 @@ class Dashborad extends Component {
 
 
     //size of graph
-    var w = window.innerWidth-500;
+    var w = window.innerWidth-300;
     var h = window.innerHeight-150;
 
     var rang_w = w/100;
     var rang_h = h/100;
     
+    const select =this.props.select;
+    var src = this.props.workpaper[select].sources;
+    var dvc = this.props.workpaper[select].devices;
  
     //Primary data
-    var  container = Calculate_interaction(this.props.src,this.props.dvc);
+    var  container = Calculate_interaction(src,dvc);
     
-    var  data= Parameters(this.props.src,this.props.dvc,container);
+    var  data= Parameters(src,dvc,container);
 
     const update = this.state.data.concat(data);
 
 
-    var lay  = this.props.layout;
+    var lay  = Object.assign({},this.props.workpaper[select].layout) 
      
     lay.width= w;lay.height= h;
     lay.xaxis.range = [-rang_w,rang_w];
     lay.yaxis.range = [-rang_h,rang_h];
 
-    var conf = this.props.config
 
+    
     this.setState({
 
       data:update,
 
       layout:lay,
-      config:conf
+      config:this.props.workpaper[this.props.select].config
     })
    
 
@@ -81,18 +84,23 @@ class Dashborad extends Component {
     var chang=false;
     var update=this.state.data;
 
-    var w = window.innerWidth-500;
+    var w = window.innerWidth-300;
     var h = window.innerHeight-150;
 
     var rang_w = w/100;
     var rang_h = h/100;
+
+    const select =nextProps.select;
    
     if(nextProps.Changed===true || nextProps.ChangedProject===true ){
 
+      const select =nextProps.select;
+      var src = nextProps.workpaper[select].sources;
+      var dvc = nextProps.workpaper[select].devices;
       
-      var  container = Calculate_interaction(nextProps.src,nextProps.dvc);
+      var  container = Calculate_interaction(src,dvc);
 
-      var update= Parameters(nextProps.src,nextProps.dvc,container);
+      var update= Parameters(src,dvc,container);
 
       chang=true;
 
@@ -101,13 +109,13 @@ class Dashborad extends Component {
 
 
 
-    var lay  = this.props.layout;
+    var lay  = Object.assign({},this.props.workpaper[select].layout) 
       
     lay.width= w;lay.height= h;
     lay.xaxis.range = [-rang_w,rang_w];
     lay.yaxis.range = [-rang_h,rang_h];
 
-    var conf = this.props.config
+    var conf = Object.assign({},this.props.workpaper[select].config)
        
     this.setState({
       data:update,
@@ -128,6 +136,7 @@ class Dashborad extends Component {
 
   render(){
 
+  
             return (
               <div className="wrapper_r">
                 
@@ -153,13 +162,12 @@ class Dashborad extends Component {
     const mapStateToProps = state => {
       
       return {
-          src:                state.workpaper.Workpaper[state.workpaper.select].sources,
-          dvc:                state.workpaper.Workpaper[state.workpaper.select].devices,
+
           Changed:            state.globalState.Changed,
           ChangedProject:     state.workpaper.Datachange,
           username:           state.profile.username,
-          layout:             state.workpaper.Workpaper[state.workpaper.select].layout,
-          config :            state.workpaper.Workpaper[state.workpaper.select].config
+          workpaper:          state.workpaper.Workpaper,
+          select   :          state.workpaper.select
       };
     };
     

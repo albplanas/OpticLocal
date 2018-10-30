@@ -65,15 +65,14 @@ class Edite_Element extends Component {
         var src_lis=sources.map(elem => this.list_elem(elem))
 
         var dvc_lis=devices.map(elem => this.list_elem(elem) ) 
+        var show = sources.length + devices.length > 0 ? {display:"block"}:{display:"none"}
 
             return (
-            <div id="edite_elem" >
+            <div id="edite_elem" style={show} >
                <p style={{color:"rgb(200,200,200)",fontSize:"20px"}}>Edit</p>
-                <div id="accordion">
-                        <p>Sources</p>                 
+                <div id="accordion">                
                             {src_lis}
                         <hr/>
-                        <p>Devices</p> 
                             {dvc_lis}
                 </div>
             </div>
@@ -221,8 +220,8 @@ class Edite_Element extends Component {
   const mapStateToProps = state => {
     return {
         door:         state.globalState.door,
-        src:          state.workpaper.Workpaper[state.workpaper.select].sources,
-        dvc:          state.workpaper.Workpaper[state.workpaper.select].devices,
+        src:          state.workpaper.Workpaper.length > 0 ? state.workpaper.Workpaper[state.workpaper.select].sources :[],
+        dvc:          state.workpaper.Workpaper.length > 0 ? state.workpaper.Workpaper[state.workpaper.select].devices :[],
     };
 };
 

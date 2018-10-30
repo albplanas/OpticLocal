@@ -1,6 +1,7 @@
 import * as actionTypes from '../actions';
 
 const initialState = {
+    port:"A",
     change :false,
     login:false,
     src:"",
@@ -42,7 +43,14 @@ const reducer = (state = initialState, action) => {
                                         return {
                                             ...state,
                                             change:action.value
-                                         }                                                                                 
+                                         }       
+
+            case actionTypes.CHANGEPORT:
+            console.log("Im here")
+                                         return {
+                                            ...state,
+                                            port:action.value
+                                         }                                                                                                                       
     }
     return state;
 };

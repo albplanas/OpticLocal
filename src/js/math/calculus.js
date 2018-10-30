@@ -75,7 +75,7 @@ function Calculate_Intercept(haz,dvc,num_gen){
     for(var i=0;i < dvc.length;i++){
         
                 var elem =dvc[i] ;
-
+                
                 var Intercept = elem.map((Superf,i)=>{
                     if(i===0){return {x:undefined,y:undefined}}
                     else{

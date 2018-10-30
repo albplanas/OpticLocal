@@ -207,6 +207,7 @@ Cancel(){
                                         <option id="haz" value="haz" >Ray</option>
                                         <option id="mirror" value="mirror">Mirror</option>
                                         <option id="len" value="len">Lens</option>
+                                        <option id="diaphragm" value="diaphragm">Diaphragm</option>
                                     </select>      
                             </div>
 

@@ -1,40 +1,45 @@
 import * as actionTypes from '../actions';
 
+const  Model={
+    title:"New Project",
+    description:"Describe your project here",
+
+    sources:[ ],
+    devices:[ ],
+
+    layout:{
+        width: 550,
+        height: 550, 
+        title: 'New title',
+        xaxis: {
+          range: [-50,50],
+          autorange: false
+        },
+        yaxis: {
+          range: [-50,50],
+          autorange: false
+        },
+        dragmode: 'pan',
+        
+  },
+      config:{
+        scrollZoom: true,
+        editable: true,
+        displayModeBar: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: ["sendDataToCloud","autoScale2d","hoverCompareCartesian","zoom2d"]
+      }
+}
+
+
+
 const initialState = {
     change:false,
     Datachange:false,
     select: 0,
+   
     Workpaper:[
-            {
-                title:"New Project",
-                description:"Describe your project here",
-
-                sources:[ ],
-                devices:[ ],
-
-                layout:{
-                    width: 550,
-                    height: 550, 
-                    title: 'New Title',
-                    xaxis: {
-                      range: [-50,50],
-                      autorange: false
-                    },
-                    yaxis: {
-                      range: [-50,50],
-                      autorange: false
-                    },
-                    dragmode: 'pan',
-                    
-              },
-                  config:{
-                    scrollZoom: true,
-                    editable: true,
-                    displayModeBar: false,
-                    displaylogo: false,
-                    modeBarButtonsToRemove: ["sendDataToCloud","autoScale2d","hoverCompareCartesian","zoom2d"]
-                  }
-            }
+        Model
     ]
 }
 
@@ -100,6 +105,8 @@ const reducer = (state = initialState, action) => {
                                 ...state,
                                 Workpaper:action.papers.length > 0 ? action.papers: state.Workpaper ,
                                 change:true,
+                                Datachange:true
+                                
                             } 
                             
         case actionTypes.PAPERSCHANGE:
@@ -116,7 +123,7 @@ const reducer = (state = initialState, action) => {
 
                                 return {
                                     ...state,
-                                    Workpaper :state.Workpaper.concat({ title:"New Project",description:"Describe your project here",sources:[], devices:[], layout:{},config:{}}),
+                                    Workpaper :state.Workpaper.concat( Model),
                                     select:l,
                                     change:true,
                                     Datachange:true
@@ -130,7 +137,27 @@ const reducer = (state = initialState, action) => {
                                         Workpaper : action.workpaper,
                                         change : true,
                                     }  
-    
+                                    
+       case actionTypes.OPENPROJECT:
+                                    
+                                    return{
+                                        ...state,
+                                        select:action.val,
+                                        change : true
+                                    }    
+       
+      case actionTypes.DELETEPROJECT:
+           console.log("Delete",action)
+                        return {
+                            ...state,
+                            change : true,
+                            Datachange:true,
+                            select:     action.Wp.length > 0 ? action.value :0,
+                            Workpaper: action.Wp.length > 0 ? action.Wp :[Model]
+                        }  
+            
+                 
+
        case actionTypes.CLEANDATA:
 
                                     return {
@@ -138,38 +165,7 @@ const reducer = (state = initialState, action) => {
                                         change : true,
                                         Datachange:true,
                                         select: 0,
-                                        Workpaper:[
-                                                {
-                                                    title:"New Project",
-                                                    description:"Describe your project here",
-
-                                                    sources:[ ],
-                                                    devices:[ ],
-
-                                                    layout:{
-                                                        width: 550,
-                                                        height: 550, 
-                                                        title: 'New Title',
-                                                        xaxis: {
-                                                        range: [-50,50],
-                                                        autorange: false
-                                                        },
-                                                        yaxis: {
-                                                        range: [-50,50],
-                                                        autorange: false
-                                                        },
-                                                        dragmode: 'pan',
-                                                        
-                                                },
-                                                    config:{
-                                                        scrollZoom: true,
-                                                        editable: true,
-                                                        displayModeBar: false,
-                                                        displaylogo: false,
-                                                        modeBarButtonsToRemove: ["sendDataToCloud","autoScale2d","hoverCompareCartesian","zoom2d"]
-                                                    }
-                                                }
-                                        ]
+                                        Workpaper:[Model]
                                     }                              
                                     
     }

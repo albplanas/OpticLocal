@@ -4,7 +4,7 @@ import * as actionTypes from '../../../../store/actions';
 
 // Options Values
 
-var arrayName=["Home","Dashborad","Profile","Forum","Contributions"];
+var arrayName=["Home","Dashboard","Profile","Forum","Contributions"];
 var arrayIcon=["fas fa-home","fas fa-briefcase","fas fa-user","fas fa-user-friends","fas fa-users"];
 var arrayId  =[1,2,3,4,5];
 

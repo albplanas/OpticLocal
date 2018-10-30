@@ -39,7 +39,7 @@ module.exports = function (app,Users) {
 
         app.route('/saveProject')
                 .post( (req, res) => {
-                    console.log(req.body.arr)
+                    
                     //Updatear todo el projecto
                     Users.update({ username: req.body.username }, { $set: { worksheet: req.body.arr }},function (err, user) {
                    

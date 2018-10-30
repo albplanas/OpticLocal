@@ -31,7 +31,12 @@ const reducer = (state = initialState, action) => {
                      return {
                                          ...state,
                                          Changed: action.value
-                                      }                         
+                                      } 
+           case actionTypes.LOGINLINKS:
+                                      return {
+                                          ...state,
+                                         door:"door"+action.value 
+                                       }                                                   
     }
     return state;
 };

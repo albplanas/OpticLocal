@@ -16,11 +16,12 @@ function Segment_intercept(haz,segment){
     }
     Intercept=Interception_rect(rect_1,segment);
 
+
     var  L=Distance(Intercept,segment)
     var  F=Distance(Intercept,rect_1 )
   
     
-    if( segment.longitud/2.0 < L )                      { Intercept = {x:undefined,y:undefined} } 
+    if( segment.l/2.0 < L )                      { Intercept = {x:undefined,y:undefined} } 
 
     if( F < 0.000001)          { Intercept = {x:undefined,y:undefined} } 
 

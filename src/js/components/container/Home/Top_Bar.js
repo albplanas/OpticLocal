@@ -22,6 +22,7 @@ class TopBar extends Component {
           this.SignGoogle     = this.SignGoogle.bind(this);
           this.onChange       = this.onChange.bind(this);
           this.Logout         = this.Logout.bind(this);
+        
     }
 
     //Helpers functions
@@ -59,9 +60,11 @@ class TopBar extends Component {
         }
         
         if(this.state.Log_active==="LOGIN"){
-            console.log("Test")
             axios.post("/login", user)
                 .then((result) => {
+
+                   
+                    
                      result.data.login ? this.props.Login( result.data.login, result.data.profile) : this.props.Login( result.data.login  , { username   : "", src        : "", email      : "", status     : "", location   : ""})
                      this.props.Papers(result.data.papers)
 
@@ -180,9 +183,9 @@ class TopBar extends Component {
                                             <button  className="bg-white rounded border border-dark text-primary " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style={{width:"auto",marginTop:"15px"}}><span style={{padding:"5px"}}>{"Welcome "+this.props.username} <i style={{marginLeft:"5px"}} className="fas fa-caret-down"></i></span></button>
                                             
                                             <div className="dropdown-menu bg-white">
-                                                    <a className="dropdown-item text-primary" href="#">Profile</a>
-                                                    <a className="dropdown-item text-primary" href="#">Contributions</a>
-                                                    <a className="dropdown-item text-primary" href="#">Messenger</a>
+                                                    <a className="dropdown-item text-primary" onClick={()=>{this.props.ChangePort("A");this.props.LoginLinks("3"); }}>Profile</a>
+                                                    <a className="dropdown-item text-primary" onClick={()=>{this.props.ChangePort("B");this.props.LoginLinks("3"); }}>Your projects</a>
+                                                    <a className="dropdown-item text-primary" onClick={()=>{this.props.ChangePort("C");this.props.LoginLinks("3"); }}>Messenger</a>
                                                 <div className="dropdown-divider"></div>
                                                 <div id="logout" className="dropdown-item text-danger"  onClick={this.Logout}>Logout</div> 
                                             </div>
@@ -254,7 +257,9 @@ const mapDispatchToProps = dispatch => {
         Login       : (val, profile) => dispatch({type: actionTypes.LOGIN , value:val, profile:profile}),
         Papers      : (papers) => dispatch({type: actionTypes.PAPERS , papers:papers}),
         CleanData   : () => dispatch({type: actionTypes.CLEANDATA}),
-        CleanProfile   : () => dispatch({type: actionTypes.CLEANPROFILE})
+        CleanProfile   : () => dispatch({type: actionTypes.CLEANPROFILE}),
+        ChangePort     : (value) => dispatch({type: actionTypes.CHANGEPORT , value: value}),
+        LoginLinks     : (value) => dispatch({type: actionTypes.LOGINLINKS , value: value})
     };
 };
 
