@@ -12,7 +12,9 @@
                 *********************************************** */
 
                 function Interception(r){
+
                     return r.m===Infinity?Infinity:r.y-r.m*r.x;
+
                 }
 
                 /*********************************************** *
@@ -24,7 +26,9 @@
                         var n1=Interception(r1);
                         var n2=Interception(r2);
 
-                        if(r1.m===r2.m){return {x:undefined,y:undefined}}
+                        if(r1.m===r2.m){
+                            return {x:undefined,y:undefined}
+                        }
                         if(r1.m===Infinity)
                             return {
                                 x:r1.x,
@@ -93,6 +97,8 @@
                     }
 
         }
+        
+              
                 /*********************************************** *
                                  Distance
                 *********************************************** */
@@ -281,7 +287,7 @@
         if(b===0){ return  a>=0? 0.5*Math.PI : 1.5*Math.PI   }
         return alpha
     }
-
+//Useful functions
     function Slope_in_the_Circle(pto,Circle){
        
         let a = pto.y-Circle.y;
@@ -289,24 +295,47 @@
         return a===0? Infinity: -b/a
     }
 
+    function Slope(ptoA,ptoB){
+        return ptoB.x===ptoA.x? Infinity : (ptoB.y-ptoA.y)/(ptoB.x-ptoA.x);
+    }
+
+    function ReScale(angle){
+
+        if(angle<0){
+            return ReScale(angle +360)
+        }
+       else if(angle >=360){
+           return ReScale(angle-360)
+       }
+        else{
+            return angle
+        }
+       
+    }
+
     
  module.exports = {
-                    Interception : Interception,
-                    Interception_rect : Interception_rect,
-                    Interception_rect_circle : Interception_rect_circle ,
+                    Interception                                        : Interception,
+                    Interception_rect                                   : Interception_rect,
+                    Interception_rect_circle                            : Interception_rect_circle ,
 
-                    Distance : Distance,
-                    Discriminant : Discriminant,
+                    Distance                                            : Distance,
+                    Discriminant                                        : Discriminant,
 
-                    Find_Extreme_point: Find_Extreme_point,
-                    Vector:Vector,
+                    Find_Extreme_point                                  : Find_Extreme_point,
+                    Vector                                              : Vector,
 
 
-                    Conversor_from_L_to_angle : Conversor_from_L_to_angle,
-                    Convert_to_Grade : Convert_to_Grade,
-                    Convert_Center_Mirror_to_Center_Circle : Convert_Center_Mirror_to_Center_Circle,
-                    Angle_in_the_Circle : Angle_in_the_Circle ,
-                    Slope_in_the_Circle : Slope_in_the_Circle
+                    Conversor_from_L_to_angle                           : Conversor_from_L_to_angle,
+                    Convert_to_Grade                                    : Convert_to_Grade,
+                    Convert_Center_Mirror_to_Center_Circle              : Convert_Center_Mirror_to_Center_Circle,
+                    Angle_in_the_Circle                                 : Angle_in_the_Circle ,
+                    Slope_in_the_Circle                                 : Slope_in_the_Circle,
+
+
+                    Slope:Slope,
+                    ReScale:ReScale
+                   
                 }
                 
 

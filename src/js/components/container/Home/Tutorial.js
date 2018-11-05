@@ -28,27 +28,44 @@ var arraySrc=["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzcAiYeT5po
  var arrayText=["1","2","3","4"];
 
 
-function Tutorial (){
+ class Tutorial extends Component{
 
-      return (
-        <div id="Tutorial">
-             <h1>Tutorial</h1>
-             <hr/>
-             <div className="searchform">
-                <input type="text" placeholder="Let' me help you out!"/>
-                <button>Go</button>
-            </div>
+  constructor(props) {
+       super(props);
 
-            <div className="flex-container">
-                 
-                 {arrayName.map((elem,index)=>{
-                   return Card(elem, arraySrc[index] , arrayText[index])
-                 })}
-                 
-            </div>
+       this.state={
 
-       </div>   
-      );
+               worksheet:[],
+               mode:[],
+               username:"",
+               select:0
+
+       }
+      }
+      render(){
+
+
+        return (
+          <div id="Tutorial">
+               <h1>Tutorial</h1>
+               <hr/>
+               <div className="searchform">
+                  <input type="text" placeholder="Let me help you out!"/>
+                  <button>Go</button>
+              </div>
+  
+              <div className="flex-container">
+                   
+                   {arrayName.map((elem,index)=>{
+                     return Card(elem, arraySrc[index] , arrayText[index])
+                   })}
+                   
+              </div>
+  
+         </div>   
+        );
+
+      }
     }
   
 

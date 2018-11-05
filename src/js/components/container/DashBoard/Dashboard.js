@@ -3,12 +3,17 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../../store/actions';
 
-const { Calculate_interaction} = require('../../../math/calculus');
-const { Parameters} = require('../../../math/parameters');
+const { Calculate_interaction}    = require('../../../math/calculus');
+const { Parameters}               = require('../../../math/parameters');
+var {splitRays}                   = require('../../../math/RayConcept')
+
 
 import Graphic from "./Graphic";
 import Calculator from "./Calculator";
 import Boxtools from "./Boxtools";
+
+
+//Just a test
 
 
 class Dashborad extends Component {
@@ -38,17 +43,24 @@ class Dashborad extends Component {
   componentWillMount() {
 
 
+
+
     //size of graph
-    var w = window.innerWidth-300;
+    var w = window.innerWidth-400;
     var h = window.innerHeight-150;
 
     var rang_w = w/100;
     var rang_h = h/100;
     
     const select =this.props.select;
-    var src = this.props.workpaper[select].sources;
+    var src = splitRays(this.props.workpaper[select].sources,this.props.workpaper[select].devices);
     var dvc = this.props.workpaper[select].devices;
  
+
+
+
+
+
     //Primary data
     var  container = Calculate_interaction(src,dvc);
     
@@ -80,42 +92,47 @@ class Dashborad extends Component {
 
   //Update the graphic
  componentWillReceiveProps(nextProps) {
-
+   
     var chang=false;
     var update=this.state.data;
 
-    var w = window.innerWidth-300;
+    var w = window.innerWidth-400;
     var h = window.innerHeight-150;
 
     var rang_w = w/100;
     var rang_h = h/100;
 
     const select =nextProps.select;
+
+    
    
     if(nextProps.Changed===true || nextProps.ChangedProject===true ){
 
-      const select =nextProps.select;
-      var src = nextProps.workpaper[select].sources;
-      var dvc = nextProps.workpaper[select].devices;
-      
-      var  container = Calculate_interaction(src,dvc);
+              const select =nextProps.select;
+              var src = splitRays(nextProps.workpaper[select].sources,nextProps.workpaper[select].devices);
+              var dvc = nextProps.workpaper[select].devices;
 
-      var update= Parameters(src,dvc,container);
 
-      chang=true;
+              
+              var  container = Calculate_interaction(src,dvc);
+
+              var update= Parameters(src,dvc,container);
+
+              chang=true;
+              
 
     }
 
 
 
 
-    var lay  = Object.assign({},this.props.workpaper[select].layout) 
+    var lay  = Object.assign({},nextProps.workpaper[select].layout) 
       
     lay.width= w;lay.height= h;
     lay.xaxis.range = [-rang_w,rang_w];
     lay.yaxis.range = [-rang_h,rang_h];
 
-    var conf = Object.assign({},this.props.workpaper[select].config)
+    var conf = Object.assign({},nextProps.workpaper[select].config)
        
     this.setState({
       data:update,
@@ -124,8 +141,7 @@ class Dashborad extends Component {
       config:conf
     })
    
-    nextProps.onChanged(false);
-    nextProps.onDataChanged(false)
+
     
   }
 
@@ -138,9 +154,9 @@ class Dashborad extends Component {
 
   
             return (
-              <div className="wrapper_r">
+              <div >
                 
-                    <div id="content_r">
+                    <div >
                        <Boxtools/>
                         <Graphic info={this.state}/>
                        

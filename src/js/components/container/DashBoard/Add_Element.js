@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../../store/actions';
 
+import {dragElement}   from './HelperFunctions';
+
+const  {IndexCorrection}          = require('../../../math/IndexRefractionSource');
+
+
 
 
 
@@ -9,99 +14,117 @@ class Add_Element extends Component {
     constructor(props) {
         super(props);
         this.state =  {
-              select:"Choose"
+              select:"Choose", 
+              Properties:{},
+              Wp:[],
+              selectWp:0,
+              door:""
           }
 
-        this.Add=this.Add.bind(this);
-        this.Cancel=this.Cancel.bind(this);
-        this.Select=this.Select.bind(this);
-        this.SelectPrototype =  this.SelectPrototype.bind(this);
-        this.PropertiesList =  this.PropertiesList.bind(this);
-        this.dragElement =  this.dragElement.bind(this);
+        this.Add                = this.Add.bind(this);
+        this.change             = this.change.bind(this);
+        this.Cancel             = this.Cancel.bind(this);
+        this.Select             = this.Select.bind(this);
+        this.SelectPrototype    = this.SelectPrototype.bind(this);
+        this.PropertiesList     = this.PropertiesList.bind(this);
+       
     }
-//Helper functions
-Cancel(){
-    document.getElementById("inputGroupSelect01").value="Choose";
-    this.setState({  select:"Choose" });
-    
-}
-   Select(){
 
-       let d=document.getElementById("inputGroupSelect01").value;
-        this.setState({  select:d });
+
+//Helper functions
+    Cancel(){
+        this.setState({  select:"Choose" });
+        
+    }
+
+    change(e){
+       var prop = e.target.name;
+       var  changeProperties =Object.assign({},this.state.Properties);
+       changeProperties[prop]=e.target.value;
+       this.setState({ 
+        
+        Properties : changeProperties
+       });
+    }
+
+   Select(e){
+
+         
+
+        var Selected=this.SelectPrototype(e.target.id);
+
+        this.setState({ 
+             select:e.target.id,
+             Properties : Selected.length > 0 ? Selected[0] : {} 
+            });
     }
 
     Add(){
-        var sub=true;
+//I need to make a function for alowed values
 
-        if(this.state.select !="Choose"){
+        var properties=Object.assign({},this.state.Properties)
 
-            var fn=this.state.select
-            var properties=this.SelectPrototype(fn,this.props.prototypes)
-      
-            var properties_list= Object.assign({}, properties[0]);
-            
-            for (var prop in properties[0]){
+        properties.id=Date.now();
+          
+        var selectQ =this.state.selectWp
+        var newWp  =this.state.Wp;
 
-                if(prop==="fn" ){properties_list[prop]=fn; continue}
-                if(prop==="id" ){properties_list[prop]=Date.now(); continue}
-                if(prop==="gen" ){ properties_list[prop]=0; continue}
-                if(prop==="name" ){ properties_list[prop]=document.getElementById("Add_"+prop).value; continue}
+       
+        
+     //Update
+     if(properties.fn=="haz" || properties.fn=="coneLight" || properties.fn==="stripRay"){
 
-               var value=document.getElementById("Add_"+prop).value
-              
-               if(value.length>0){ 
-                   properties_list[prop]= value }
-               else{
-                   sub=false;
-                   document.getElementById("Add_"+prop).placeholder="required"
-                   break;
-               }
-               
-               
-            }
-              if(sub===true){
-
-                document.getElementById('choose').selected="selected"
-                
-                //inicialization
-                for (var prop in properties[0]){
-
-                    if(prop==="fn" || prop==="id" || prop==="gen"){ continue;}
-                    else{
-                        document.getElementById("Add_"+prop).value=""
-                    }
-                }
-                
-                document.getElementById("inputGroupSelect01").value="Choose";
-                this.setState({  select:"Choose" });
-                this.props.Add_function(properties_list);
-                this.props.onChanged(true);
-              }
+        newWp[selectQ].sources = newWp[selectQ].sources.concat(properties)
+        
         }
+      else{
+        newWp[selectQ].devices = newWp[selectQ].devices.concat(properties)
+      }  
 
+   
+    //Corrections of the Index of refraction 
+    newWp[selectQ].sources=IndexCorrection(newWp[selectQ].sources,newWp[selectQ].devices)
+
+    
+
+        this.props.Add_function(newWp);
+               
+
+                
+        this.props.onChanged(true);
+
+                this.setState({  
+                    select:"Choose",
+                    Properties :  {}  
+                });
+        
     }
 
-    SelectPrototype(select,prototypes){
-
+    SelectPrototype(select){
+        
+        var prototypes=this.props.prototypes;
+        
         var Selected = prototypes.filter(elem => elem.fn===select)
 
         return Selected;
     }
 
-    PropertiesList(select,prototypes){
+    PropertiesList(){
 
-            var Selected=this.SelectPrototype(select,prototypes);
+            
             var array=[];
        
+           var  Properties =Object.assign({},this.state.Properties)
             
-            if(Selected===[]){array=[]}
-            else{
-                for (var prop in Selected[0]){
+            if(this.state.select!=="Choose"){
 
-                    if(prop==="fn" || prop==="id" || prop==="gen" ){continue}
+                for (var prop in Properties){
 
-                   if(prop==="sence" || prop==="sence_front" || prop==="sence_back" ){
+                    if(prop==="fn" || prop==="id" || prop==="gen"  ){continue}
+
+                    if(prop==="indexRefraction" && (Properties.fn==="haz" || Properties.fn==="coneLight" || Properties.fn==="stripRay")  ){continue}
+
+                   else if(prop==="sence"  ){
                                 array.push(
                                     <div className="input-group input-group-sm mb-2">
                                                         <div className="input-group-prepend">
@@ -120,7 +143,7 @@ Cancel(){
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text text-primary" >{prop}</span>
                                                 </div>
-                                                <input id={"Add_"+prop}  type="text" className="form-control" name={prop} />
+                                                <input id={"Add_"+prop}  type="text" className="form-control" name={prop} value={Properties[prop]} onChange={this.change}/>
                                                 
                             </div> 
                         )
@@ -129,8 +152,8 @@ Cancel(){
                 }
                 array.push(
                     <div className="input-group input-group-sm mb-2 mt-5">
-                         <button  className="btn btn-success btn-block" onClick={this.Add}>Add</button>
-                          <button className="btn btn-danger btn-block" onClick={this.Cancel}>Cancel</button>
+                         <button  className="btn btn-success btn-block"style={{borderRadius: "50px"}} onClick={this.Add}>Add</button>
+                          <button className="btn btn-danger btn-block" style={{borderRadius: "50px"}} onClick={this.Cancel}>Cancel</button>
                     </div> 
                           
                 )
@@ -139,57 +162,50 @@ Cancel(){
             return array
     }
 
-     dragElement(elmnt) {
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        if (document.getElementById(elmnt.id + "_header")) {
-         
-          document.getElementById(elmnt.id + "_header").onmousedown = dragMouseDown;
-        } else {
-       
-          elmnt.onmousedown = dragMouseDown;
-        }
-      
-        function dragMouseDown(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // get the mouse cursor position at startup:
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          document.onmouseup = closeDragElement;
-          // call a function whenever the cursor moves:
-          document.onmousemove = elementDrag;
-        }
-      
-        function elementDrag(e) {
-          e = e || window.event;
-          e.preventDefault();
-          // calculate the new cursor position:
-          pos1 = pos3 - e.clientX;
-          pos2 = pos4 - e.clientY;
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          // set the element's new position:
-          elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-          elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-        }
-      
-        function closeDragElement() {
-          /* stop moving when mouse button is released:*/
-          document.onmouseup = null;
-          document.onmousemove = null;
-        }
-      } 
 
  //Cyclelife functions
  componentDidMount() {
         var AddChart = document.getElementById("Add_Chart")
-        this.dragElement(AddChart);
-  }   
+        dragElement(AddChart);
+  } 
+
+  //CycleLyfe functions
+
+
+componentWillMount() {
+
+    this.setState({
+        Wp          :this.props.workpaper,
+        selectWp    :this.props.selectQ,
+        door        : this.state.door
+
+    })
+
+  }
+
+
+
+  //Update props
+ componentWillReceiveProps(nextProps) {
+
+        if(nextProps.change===true || nextProps.Datachange===true){
+
+            this.setState({
+                Wp:             nextProps.workpaper,
+                selectWp:         nextProps.selectQ,
+                door :          nextProps.door
+
+            })
+
+        }
+    
+  }
+
+
     render() {
 
-        var prototypes=this.props.prototypes;
-        var select=this.state.select;
-        var Properties_List=this.PropertiesList(select,prototypes);
+
+        var Properties_List=this.PropertiesList();
 
 
         var show_add= this.state.select==="Choose"? {display:"none"}:{display:"block"}
@@ -200,20 +216,51 @@ Cancel(){
 
       return (
                     <div id="add_elem">
-                            <p style={{color:"rgb(200,200,200)",fontSize:"20px"}}>Add</p>
-                           <div className="input-group mb-2">
-                                    <select className="custom-select" id="inputGroupSelect01" onChange={this.Select}>
-                                        <option id="choose" value="Choose" selected >Choose...</option>
-                                        <option id="haz" value="haz" >Ray</option>
-                                        <option id="mirror" value="mirror">Mirror</option>
-                                        <option id="len" value="len">Lens</option>
-                                        <option id="diaphragm" value="diaphragm">Diaphragm</option>
-                                    </select>      
-                            </div>
+                        <ul class="list-unstyled components">
+                        <li className="mb-3">
+                          <a href="#SourcesSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle bg-dark text-success shadow-sm rounded">Sources</a>
+                                <ul class="collapse list-unstyled" id="SourcesSubmenu">
+                                    <li>
+                                    <a href="#RaySubmenus" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle bg-dark text-success shadow-sm rounded">Ray</a>
+                                
+                                                <ul class="collapse list-unstyled" id="RaySubmenus">
+                                                    <li>
+                                                        <a id="haz" onClick={this.Select}>A Single ray</a>
+                                                    </li>
+                                                    <li>
+                                                        <a id="stripRay" onClick={this.Select}>Strip of light</a>
+                                                    </li>
+                                                    <li>
+                                                        <a id="coneLight" onClick={this.Select}>Cone of light</a>
+                                                    </li>
+                                                </ul>
+                                    </li>
+                                   
+                                </ul>
+                         </li> 
+                         <li className="mb-1">       
+                                <a href="#DevicesSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle bg-dark text-success shadow-sm rounded">Devices</a>
+                                
+                                    <ul class="collapse list-unstyled" id="DevicesSubmenu">
+                                        <li>
+                                            <a id="mirror" onClick={this.Select}>Mirror</a>
+                                        </li>
+                                        <li>
+                                            <a id="len" onClick={this.Select}>Len</a>
+                                        </li>
+                                        <li>
+                                            <a id="diaphragm" onClick={this.Select}>Diaphragm</a>
+                                        </li>
+                                    </ul>
+                         </li>           
+                               
+                   </ul>    
+                          
 
-                            <div className="card border-primary mb-2" id="Add_Chart" style={show_add}>
-                                <div className="card-header bg-primary" id="Add_Chart_header">Define properties</div>
-                                <div className="card-body ">
+                                
+                            <div className="card border-primary mb-2 shadow" id="Add_Chart" style={show_add}>
+                                <div className="card-header bg-primary text-center" id="Add_Chart_header">{this.state.select+"'s poperties"}</div>
+                                <div className="card-body  p-4" >
                                                                 
                                     {Properties_List}
                                    
@@ -229,14 +276,18 @@ Cancel(){
 
   const mapStateToProps = state => {
     return {
-        door: state.globalState.door,
-        prototypes:state.object.prototypes
+        door                    : state.globalState.door,
+        prototypes              : state.object.prototypes,
+        workpaper       :         state.workpaper.Workpaper,
+        selectQ          :         state.workpaper.select,
+        change          :         state.workpaper.change,
+        dataChange      :         state.workpaper.Datachange
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-Add_function: (properties) => dispatch({type: actionTypes.ADDFUNCTION ,properties:properties}),
+Add_function: (Wp) => dispatch({type: actionTypes.ADDFUNCTION ,Wp:Wp}),
 onChanged: (value=true)=>dispatch({type: actionTypes.CHANGED ,value:value})
     };
 };

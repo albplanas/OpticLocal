@@ -26,3 +26,4 @@ export const NEWTITLE           = "NEWTITLE";
 export const DATACHANGE         = "DATACHANGE";
 export const OPENPROJECT        = "OPENPROJECT";
 export const DELETEPROJECT      = "DELETEPROJECT";
+export const UPDATEDATE         = "UPDATEDATE";

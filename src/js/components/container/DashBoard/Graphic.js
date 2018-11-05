@@ -79,8 +79,8 @@ class Graphic extends Component {
       }
 
     render() {
-                
-                  return (<div>
+               
+                  return (<div >
                                 <div id="plotGraph"  />
                           </div>
                           ) 

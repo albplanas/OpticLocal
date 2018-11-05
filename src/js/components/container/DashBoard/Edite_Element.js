@@ -2,14 +2,18 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../../store/actions';
 
-
+const  {IndexCorrection}          = require('../../../math/IndexRefractionSource');
 
 
 class Edite_Element extends Component {
     constructor(props) {
         super(props);
         this.state =  {
-
+                Wp:[],
+                select:0,
+                door:"",
+                change:false,
+                dataChange:false
           }
        
         this.Delete=this.Delete.bind(this)
@@ -18,7 +22,7 @@ class Edite_Element extends Component {
 
     //Helper Function
      list_elem(elem){
-
+                    
                     return(
                     <div className="card bg-dark" style={{marginTop:"5px"}}>
                             <div className="card-header" style={{height:"60px"}} id={"heading"+elem.id}>
@@ -28,16 +32,16 @@ class Edite_Element extends Component {
                                                             <button id={"e"+elem.id} className=" btn btn-link "   style={{marginLeft:"-15px"}} data-toggle="collapse" data-target={"#collapse"+elem.id} aria-expanded="true" aria-controls={"#collapse"+elem.id}><i className="fas fa-edit"   style={{ color:"green"}}   /></button>
                                                         </div>
 
-                                                        <div className="col-sm-7 edit "> <div> <p style={{textAlign:"left",fontSize:"14px",marginTop:"5px", color:"white"}}>{elem.name}</p> </div> </div> 
+                                                        <div className="col-sm-6 edit "> <div> <p style={{textAlign:"left",fontSize:"14px",marginTop:"5px", color:"white"}}>{elem.name.slice(0,7)}</p> </div> </div> 
                                                     
-                                                        <div className="col-sm-3" id={"c"+elem.id}> 
-                                                            <button id={"d"+elem.id}  data-placement="top" title={"Delete "+elem.name}  data-toggle="tooltip" className="btn" style={{background:"withe",borderRadius:"50%",marginLeft:"-5px"}} onClick={this.Delete}><i id={"e"+elem.id} style={{color:"rgb(233, 75, 60)"}} className="fas fa-trash-alt" onClick={this.Delete}></i></button>
+                                                        <div className="col-sm-4" id={"c"+elem.id}> 
+                                                            <button id={"d"+elem.id}  data-placement="top" title={"Delete "+elem.name}  data-toggle="tooltip" className="btn" style={{background:"withe",borderRadius:"50%",marginLeft:"0px"}} onClick={this.Delete}><i id={"e"+elem.id} style={{color:"rgb(233, 75, 60)"}} className="fas fa-trash-alt" onClick={this.Delete}/></button>
                                                         </div>
                                 </div>
                                 
                             </div>
                             <div id={"collapse"+elem.id} className="collapse " aria-labelledby={"heading"+elem.id} data-parent="#accordion">
-                                <div className="card-body">  <Edit_card info={elem} edit_funct={this.props.Edit_function} onChange_funct={this.props.onChanged}/> </div>
+                              <div className="card-body">  <Edit_card info={this.state} elem={elem} edit_funct={this.props.Edit_function} onChange_funct={this.props.onChanged}/> </div> 
                             </div>
                     </div>
 
@@ -47,34 +51,102 @@ class Edite_Element extends Component {
 
     //Delete Element
     Delete(e){
-
+       
         var id = e.target.id.length<1? e.target.parentNode.id.slice(1,e.target.parentNode.id.length) : e.target.id.slice(1,e.target.id.length)
+        
+        if(id.length>0 && id!==undefined){
+                    var select =this.state.select
+                    var newWp  =this.state.Wp;
 
-        this.props.Delete_function(id);
-        this.props.onChanged(true);
+
+                    newWp[select].sources =  this.state.Wp[select].sources.filter( (src) => src.id+'' !== id );
+
+                    newWp[select].devices =  this.state.Wp[select].devices.filter( dvc =>  dvc.id+'' !== id);
+
+                    
+                   //Corrections of the Index of refraction 
+                     newWp[select].sources=IndexCorrection(newWp[select].sources,newWp[select].devices)
+
+
+                    this.props.Delete_function(newWp);
+                    this.props.onChanged(true);
+
+                    this.setState({
+                        Wp:newWp
+                    })
+        }
+
+
     }
+
+//CycleLyfe functions
+
+
+componentWillMount() {
+
+    this.setState({
+        Wp:this.props.workpaper,
+        select:this.props.select,
+        door : this.state.door
+
+    })
+
+  }
+
+
+
+  //Update props
+ componentWillReceiveProps(nextProps) {
+
+    
+
+        if(nextProps.change===true || nextProps.Datachange===true || nextProps.editChange===true){
+           
+            this.setState({
+                Wp:             nextProps.workpaper,
+                select:         nextProps.select,
+                door :          nextProps.door,
+                change:         nextProps.change,
+                dataChange:     nextProps.Datachange
+
+            })
+
+            nextProps.UpdateSuccess();
+
+        }
+    
+  }
+
+
+
+
+
+
 
     
     render() {
 
-        const sources = this.props.src;
-        const devices = this.props.dvc;
+        
+        
+        const sources = this.state.Wp.length > 0  ?  this.state.Wp[this.state.select].sources  : [];
+        const devices = this.state.Wp.length > 0  ?  this.state.Wp[this.state.select].devices  : []
 
 
 
         var src_lis=sources.map(elem => this.list_elem(elem))
 
         var dvc_lis=devices.map(elem => this.list_elem(elem) ) 
-        var show = sources.length + devices.length > 0 ? {display:"block"}:{display:"none"}
+
+       
 
             return (
-            <div id="edite_elem" style={show} >
-               <p style={{color:"rgb(200,200,200)",fontSize:"20px"}}>Edit</p>
-                <div id="accordion">                
-                            {src_lis}
+            <div  >
+           
+              <div id="accordion" > 
+                        {src_lis}
                         <hr/>
                             {dvc_lis}
-                </div>
+            </div>
             </div>
             );
     }
@@ -88,25 +160,56 @@ class Edite_Element extends Component {
 
         this.state =  {
               edit_door:0,
-              properties:[]
+              Wp:[],
+              select:"",
+              properties:{}
             }
 
         this.Edite=this.Edite.bind(this);
         this.Math_list=this.Math_list.bind(this);
         this.Open_Door=this.Open_Door.bind(this);
+        this.change = this.change.bind(this);
     }
 
     componentWillMount() {
-        this.setState({ properties:this.props.info });
-      }
 
-      componentWillReceiveProps(nextProps){
-        
-        this.setState({ 
-            properties:JSON.stringify(nextProps.info) !== JSON.stringify(this.state.properties) ? nextProps.info : this.state.properties
-         });
+        this.setState({
+            Wp:this.props.info.Wp,
+            select:this.props.info.select,
+            properties:this.props.elem
+        })
+    
+      }
+    
+
+    
+      //Update props
+     componentWillReceiveProps(nextProps) {
+            
+            if(nextProps.info.change===true || nextProps.info.datachange===true ){
+    
+                this.setState({
+                    Wp:             nextProps.info.Wp,
+                    select:         nextProps.info.select,
+                    properties:     nextProps.elem
+                })
+              
+            }
         
       }
+        
+      change(){
+        var Prop = Object.assign({},this.state.properties)
+        for (var prop in Prop){
+            if(prop==="fn" || prop==="id" || prop==="gen" || prop==="indexRefraction"){continue}
+           Prop[prop]=document.getElementById("MathInput_"+prop+"_"+Prop.id).value
+            
+        }
+
+        this.setState({
+            properties:Prop
+        })
+    }
 
     Open_Door(e){
 
@@ -116,18 +219,25 @@ class Edite_Element extends Component {
     }
 
     // Helper Function
-     Math_list(list){
+     Math_list(){
         var array=[];
-       
+       var list= Object.assign({},this.state.properties)
+
         for (var prop in list){
-            if(prop==="fn" || prop==="id" || prop==="gen" ){continue}
+            if(prop==="fn" || prop==="id" || prop==="gen" ||prop==="indexRefraction"){continue}
            
             array.push(
                 <div className="input-group input-group-sm mb-2">
                                     <div className="input-group-prepend">
-                                        <span className="input-group-text" >{prop}</span>
+                                        <span className="input-group-text" >{prop.slice(0,8)}</span>
                                     </div>
-                                    <input id={"MathInput_"+prop+"_"+list.id} type="text" className="form-control" name={prop} placeholder={prop==="sence"?list[prop][0]:list[prop]} />
+                                   {
+                                       prop==="sence" ? (<select className="custom-select  form-control" name={prop} id={"MathInput_"+prop+"_"+list.id} value={list[prop]} onChange={this.change}>
+                                       <option value="+" selected >+</option>
+                                       <option value="-" >-</option>
+                                   </select> ) :
+                                                        (<input id={"MathInput_"+prop+"_"+list.id} type="text" className="form-control" name={prop} value={list[prop]} onChange={this.change} />)
+                                   } 
                 </div> 
             )
         }
@@ -135,102 +245,94 @@ class Edite_Element extends Component {
     }
 
     //Edite Element function
-    Edite(e){
-       
-       var id=this.state.properties.id;
+    Edite(){
 
-       var proper={};
+        var properties=Object.assign({},this.state.properties)
 
-       for (var prop in this.state.properties){
+        
+          
+            var select =this.state.select
+            var newWp  =this.state.Wp;
+            var id = properties.id+''
+            
+         //Update
+            newWp[select].sources =  this.state.Wp[select].sources.map( (src) =>{
+                            return src.id+'' === id ? properties : src
+                } );
 
-        if(prop==="fn" || prop==="id" || prop==="gen" ){proper[prop]=this.state.properties[prop];}
+            newWp[select].devices =  this.state.Wp[select].devices.map( (dvc) =>{
+                    return dvc.id+'' === id ? properties : dvc
+        } );
 
-        else{
 
-            var element=document.getElementById("MathInput_"+prop+"_"+id);
+        //Corrections of the Index of refraction 
+        newWp[select].sources=IndexCorrection(newWp[select].sources,newWp[select].devices)
 
-            proper[prop]= element.value!==""? element.value : this.state.properties[prop] ;
 
-            element.value="";   
-        }
-    }
-    this.props.edit_funct(id,proper);
-    this.props.onChange_funct(true);
+        this.props.edit_funct(newWp);
+        this.props.onChange_funct(true);
+
+            this.setState({
+                Wp:newWp
+            })
+
+              
+                
     }
 
     
     render() {
 
-           var info=this.state.properties;
+           
 
            var show_edit_math_door = this.state.edit_door===0? {display:"block"}:{display:"none"}
            var select_math=this.state.edit_door===0? {color:"rgb(92,184,92)"}: {color:"white"}
 
-           var show_edit_style_door = this.state.edit_door===1? {display:"block"}:{display:"none"}
-           var select_style=this.state.edit_door===1? {color:"rgb(92,184,92)"}: {color:"white"}
             
           
-           var  info_list = this.Math_list(info);
+           var  info_list = this.Math_list();
 
             return (
             <div >
                         <ul id="EditContainer">
                                 <li  id="li_0" onClick={this.Open_Door}><a id="li_0" style={select_math}>Math</a></li>
-                                <li  id="li_1" onClick={this.Open_Door}><a id="li_1" style={select_style}>Style</a></li>
+                               
                                 <button className="btn btn-success btn-sm" onClick={this.Edite} ><i className="material-icons" >send</i></button>
                         </ul>
 
                         <div id="editMath" style={show_edit_math_door}>
                            <div className="container">
-                            <div className="mb-2 mt-3" >{info.fn}</div>
+                            <div className="mb-2 mt-3" >{this.state.properties.fn}</div>
                             {info_list}
                             </div>
                         </div>
 
-                        <div id="editStyle" style={show_edit_style_door}>
-                                <div className="container">
-
-                                     <div className="input-group input-group-sm mb-2">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text" >Color</span>
-                                            </div>
-                                            <input type="text" className="form-control"  placeholder="rgb(92,184,92)" />
-                                     </div> 
-                                     <div className="input-group input-group-sm mb-2">
-
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text" >Type</span>
-                                            </div>
-
-                                            <select className="custom-select"  >
-                                                            <option value="line" selected >line</option>
-                                                            <option value="scatter" >scatter</option>
-                                             </select> 
-                                     </div> 
-                                    
-                                </div>
-                         </div>
+                       
             </div>
             );
     }
   }
-
+ 
   
 
   const mapStateToProps = state => {
     return {
-        door:         state.globalState.door,
-        src:          state.workpaper.Workpaper.length > 0 ? state.workpaper.Workpaper[state.workpaper.select].sources :[],
-        dvc:          state.workpaper.Workpaper.length > 0 ? state.workpaper.Workpaper[state.workpaper.select].devices :[],
+        door            :         state.globalState.door,
+        workpaper       :         state.workpaper.Workpaper,
+        select          :         state.workpaper.select,
+        change          :         state.workpaper.change,
+        dataChange      :         state.workpaper.Datachange,
+        editChange      :         state.workpaper.EditChange
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
 
-                Delete_function: (id) => dispatch({type: actionTypes.DELETEFUNCTION ,id:id}),
-                Edit_function: (id,element_edit) => dispatch({type: actionTypes.EDITFUNCTION ,id:id , properties: element_edit}),
-                onChanged: (value=true)=>dispatch({type: actionTypes.CHANGED ,value:value})
+                Delete_function: (Wp) => dispatch({type: actionTypes.DELETEFUNCTION ,Wp:Wp}),
+                Edit_function: (Wp) => dispatch({type: actionTypes.EDITFUNCTION ,Wp:Wp}),
+                onChanged: (value=true)=>dispatch({type: actionTypes.CHANGED ,value:value}),
+                UpdateSuccess: ()=>dispatch({type: actionTypes.UPDATEDATE})
 }
 
 };

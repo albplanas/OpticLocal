@@ -1,0 +1,128 @@
+/*--------------------------------------------------------------
+2.0 - SEARCH FORM
+--------------------------------------------------------------*/
+.searchform {
+    background:#f4f4f4;
+    background:rgba(244,244,244,.79);
+    border: 1px solid #d3d3d3;
+    height: 40px;
+    padding: 2px 5px;
+  
+    width:40%;
+    box-shadow:0 4px 9px rgba(0,0,0,.37);
+    -moz-box-shadow:0 4px 9px rgba(0,0,0,.37);
+    -webkit-box-shadow:0 4px 9px rgba(0,0,0,.37);
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    margin-bottom:40px;
+  }
+  
+  .searchform input, .searchform button {
+      float: left
+  }
+  .searchform input {
+      background:#fefefe;
+      border: none;
+      font:12px/12px 'HelveticaNeue', Helvetica, Arial, sans-serif;
+      margin-right: 5px;
+      padding: 10px;
+      width: calc(100% - 90px);
+      box-shadow: 0 0 4px rgba(0,0,0,.4) inset, 1px 1px 1px rgba(255,255,255,.75);
+      -moz-box-shadow: 0 0 4px rgba(0,0,0,.4) inset, 1px 1px 1px rgba(255,255,255,.75);
+      -webkit-box-shadow: 0 0 4px rgba(0,0,0,.4) inset, 1px 1px 1px rgba(255,255,255,.75);
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px
+  }
+      .searchform input:focus {
+          outline: none;
+          box-shadow:0 0 4px #0d76be inset;
+          -moz-box-shadow:0 0 4px #0d76be inset;
+          -webkit-box-shadow:0 0 4px #0d76be inset;
+      }
+      .searchform input::-webkit-input-placeholder {
+        font-style: italic;
+        line-height: 15px
+      }
+  
+      .searchform input:-moz-placeholder {
+        font-style: italic;
+        line-height: 15px
+      }
+  
+  .searchform button {
+      background: rgb(52,173,236);
+      background: -moz-linear-gradient(top, rgba(52,173,236,1) 0%, rgba(38,145,220,1) 100%);
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(52,173,236,1)), color-stop(100%,rgba(38,145,220,1)));
+      background: -webkit-linear-gradient(top, rgba(52,173,236,1) 0%,rgba(38,145,220,1) 100%);
+      background: -o-linear-gradient(top, rgba(52,173,236,1) 0%,rgba(38,145,220,1) 100%);
+      background: -ms-linear-gradient(top, rgba(52,173,236,1) 0%,rgba(38,145,220,1) 100%);
+      background: linear-gradient(to bottom, rgba(52,173,236,1) 0%,rgba(38,145,220,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#34adec', endColorstr='#2691dc',GradientType=0 );
+      border: none;
+      color:#fff;
+      cursor: pointer;
+      font: 13px/13px 'HelveticaNeue', Helvetica, Arial, sans-serif;
+      padding: 10px;
+      width:80px;
+      box-shadow: 0 0 2px #2692dd inset;
+      -moz-box-shadow: 0 0 2px #2692dd inset;
+      -webkit-box-shadow: 0 0 2px #2692dd inset;
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+  }
+      .searchform button:hover {
+          opacity:.9;
+      }
+      
+  /***********************************************************
+                Flex container
+  ************************************************************/
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: rgba(255,255,255,0.0);
+    margin-right:10%;
+    margin-left:10%;
+    margin-top:50px;
+  }
+  
+  .flex-container > div {
+    background-color: #f1f1f1;
+    width: 300px;
+    margin: 30px;
+    text-align: center;
+    line-height: 75px;
+    font-size: 20px;
+  }
+ 
+  .flex-container .card button{
+     margin:5px
+  }
+  .flex-container.card {
+    height: 350px;
+    float: left;
+    border-radius: 8px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    text-align: center;
+    transition: all 0.25s;
+  }
+
+
+  .flex-container  .card:hover {
+      top: -15px;
+      box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+
+ 
+
+/*****************/

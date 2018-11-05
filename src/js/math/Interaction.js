@@ -34,7 +34,7 @@ function Interacction_by_Reflexion(haz,dvc,Intercept,superf){
 
 function Interacction_by_Refraction (haz,dvc,Intercept,superf){
         
-    var len_index = dvc[0].indexRefraction ;
+    var len_index = dvc[0].indexRefraction-0 ;
     
 
     var len=dvc[superf];
@@ -49,7 +49,7 @@ function Interacction_by_Refraction (haz,dvc,Intercept,superf){
    
    var envairoment=1.0;
 
-  var n1=haz.indexRefraction;
+  var n1=haz.indexRefraction-0;
   var n2= n1===len_index? envairoment : len_index;
 
   
@@ -69,8 +69,23 @@ function Interacction_by_Refraction (haz,dvc,Intercept,superf){
      return result
     
 }
-
+function Interacction_by_Absorption (haz,dvc,Intercept,superf){
+        
+   return [{
+                x_origen:Intercept.x,
+                y_origen:Intercept.y,
+                name:'Absorption',
+                indexRefraction:undefined,
+                slope:undefined,
+                sence:undefined,
+                gen:haz.gen+1,
+                id:Date.now()/(haz.gen+1+Math.random()*100),
+                id_parent:haz.id
+   }];
+    
+}
 module.exports = {
     Interacction_by_Reflexion : Interacction_by_Reflexion,
-    Interacction_by_Refraction : Interacction_by_Refraction 
+    Interacction_by_Refraction : Interacction_by_Refraction ,
+    Interacction_by_Absorption : Interacction_by_Absorption
 }

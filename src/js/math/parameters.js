@@ -16,7 +16,9 @@ function Configuration_kids(kids){
 
            
           
-            var array= elem.map((ray_parent)=>{
+            var array= elem.filter(elem => elem.name!=="Absorption").map((ray_parent)=>{
+
+              
                 
                 var  extreme = Find_Extreme_point( elem, ray_parent.id);
             
@@ -31,6 +33,7 @@ function Configuration_kids(kids){
     
   
     var merged = [].concat.apply([], General);
+   
     return merged
    
 }
@@ -75,7 +78,13 @@ function Configuration_dvc(dvc){
    
         if(device_select.length<3){
             let Point_plot=Plot_Multiply(device_select,20)
-            return {x: Point_plot.x, y:Point_plot.y,name:device.name, mode: 'lines',marker: {color: 'green'} }
+            var Traze = Object.assign({},{x: Point_plot.x, y:Point_plot.y,name:device.name, mode: 'lines',marker: {color: 'green'} })
+            
+         //  Diferences between devices
+            if(device_select[0].fn==="diaphragm"){Traze.marker.color="black";Traze.marker.size= 12 }
+           
+           
+            return Traze
         }
         else{
             let Point_plot=Plot_Multiply(device_select,20)
@@ -96,6 +105,7 @@ function Parameters(src,dvc,kids){
 
 
     var result_func=[];
+
 
      var C_Kids = kids===[] ? [] : Configuration_kids(kids);
      var C_Src = src===[] ? [] : Configuration_src(src,kids);

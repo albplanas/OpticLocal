@@ -5,50 +5,9 @@ import { connect } from 'react-redux';
 import * as actionTypes from '../../../../store/actions';
 
 
+import {pan,zoomBack,zoomIn,zoomBox,lasso,downloadImage,}   from './HelperFunctions';
+import Alert from './Alert'
 
-
-//Methods  
-function downloadImage(id) {
-   var Tester=document.getElementById(id);
-   Plotly.downloadImage(Tester);
- }
-
-function lasso(id,layout){
-
-
-var newLayout = Object.assign({},layout);
-newLayout.dragmode = 'lasso';
-
-var Tester=document.getElementById(id);
-Plotly.relayout(Tester, newLayout);
-}
-
-function zoomBox(id,layout){
-
-
-   var newLayout = Object.assign({},layout);
-   newLayout.dragmode = 'zoom';
-   
-   var Tester=document.getElementById(id);
-   Plotly.relayout(Tester, newLayout);
-   }
-
-function zoomBack(id,layout){
-       var newLayout = Object.assign({},layout);
-       newLayout.xaxis.range = [layout.xaxis.range[0]*2,layout.xaxis.range[1]*2];
-       newLayout.yaxis.range = [layout.yaxis.range[0]*2,layout.yaxis.range[1]*2];
-       
-       var Tester=document.getElementById(id);
-       Plotly.relayout(Tester, newLayout);
-       }
-
-function pan(id,layout){
-
-               var newLayout = Object.assign({},layout);
-               newLayout.dragmode = 'pan';
-               var Tester=document.getElementById(id);
-               Plotly.relayout(Tester, newLayout);
-           }
 
 
 
@@ -71,6 +30,8 @@ class Boxtools  extends Component {
           workpaper:[],
           username : "",
           select  : 0,
+          alert:false,
+          success:false
 
       }
         this.save=this.save.bind(this);
@@ -78,7 +39,10 @@ class Boxtools  extends Component {
         this.cancel=this.cancel.bind(this);
         this.done=this.done.bind(this);
         this.change=this.change.bind(this)
+        
     }
+
+
 
     change(){
       this.setState({
@@ -96,8 +60,8 @@ class Boxtools  extends Component {
     cancel(){
             this.setState({
               saveCard:false,
-              title : this.props.title,
-              description:this.props.description
+              title:            this.props.workpaper[this.props.select].title,
+              description:      this.props.workpaper[this.props.select].description
           })
     }
 
@@ -132,11 +96,26 @@ class Boxtools  extends Component {
 
                           this.setState({
                             saveCard:false,
+                            success:true
                         })
+                        setTimeout(()=>{
+                          this.setState({
+                              success   :false,
+                             
+                        })
+                      }, 3000);
 
                   }
                   else{
-                    alert("it's just working for user, please login first")
+                    this.setState({
+                      alert:true,
+                  })
+                  setTimeout(()=>{
+                    this.setState({
+                        alert   :false,
+                       
+                  })
+                }, 3000);
                   }
 
            
@@ -149,7 +128,10 @@ class Boxtools  extends Component {
           this.setState({
             username :        this.props.username,
             select  :         this.props.select,
-            workpaper:        this.props.workpaper
+            workpaper:        this.props.workpaper,
+            title:            this.props.workpaper[this.props.select].title,
+            description:      this.props.workpaper[this.props.select].description
+
 
         })
   
@@ -165,7 +147,9 @@ class Boxtools  extends Component {
 
             username :       nextProps.username,
             select  :        nextProps.select,
-            workpaper:       nextProps.workpaper
+            workpaper:       nextProps.workpaper,
+            title:           nextProps.workpaper[nextProps.select].title,
+            description:     nextProps.workpaper[nextProps.select].description,
 
         })
          }
@@ -176,35 +160,61 @@ class Boxtools  extends Component {
 
     render(){
 
+
+
       var id="plotGraph";
 
       var layout=this.state.workpaper[this.state.select].layout;
-      var saveShow = this.state.saveCard ? {display:"block"} : {display:"none"}
 
+      var w = window.innerWidth-300;
+      var h = window.innerHeight-150;
+  
+      var rang_w = w/100;
+      var rang_h = h/100;
+
+      layout.width= w;layout.height= h;
+      layout.xaxis.range = [-rang_w,rang_w];
+      layout.yaxis.range = [-rang_h,rang_h];
+
+      var saveShow = this.state.saveCard ? {display:"block"} : {display:"none"}
+      
       var navStyle ={
-         width : window.innerWidth-300,
-         height: "54px",
-         padding: "6px",
-         background: "#444"
+ 
+           height:"auto",
+           borderRadius: "50px",
+           width:window.innerWidth-400,
+           marginLeft: "0px",
+           paddingLeft:"30px"
          
       } 
+
+     var pk= {
+        LoginAlert:this.state.alert,
+        SuccessAlert:this.state.success,
+        DeleteAlert :false
+       } 
+  
+      
       
               return(
   
                       <div>
                          
+                
   
-  
-                              <div  id="setbox" style={navStyle}>
+                              <div  className="flex-container mb-3 shadow border border-dark " id="setbox" style={navStyle}>
                                   
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="lasso"          onClick={()=>lasso(id,layout)}><i className="fas fa-pencil-alt" style={{color:"white"}}></i></button>
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="zoom in"   onClick={()=>zoomBox(id,layout)}><i className="fas fa-search-plus" style={{color:"white"}}></i></button>
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="zoom out"      onClick={()=>zoomBack(id,layout)}><i className="fas fa-search-minus" style={{color:"white"}}></i></button>
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="pan"            onClick={()=>pan(id,layout)}><i className="fas fa-hand-rock" style={{color:"white"}}></i></button> 
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="download image" onClick={()=>downloadImage(id)}><i className="fas fa-camera" style={{color:"white"}}></i></button>
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="save" onClick={this.save}><i className="fas fa-save" style={{color:"white"}}></i></button>
-                                  <button className="btn setgraph" data-toggle="tooltip" data-placement="top" title="new sheet" onClick={this.newBoard}><i className="fas fa-file" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="lasso"          onClick={()=>lasso(id,layout)}><i className="fas fa-pencil-alt" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="zoom box"   onClick={()=>zoomBox(id,layout)}><i className="fas fa-square" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="zoom in"   onClick={()=>zoomIn(id,layout)}><i className="fas fa-search-plus" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="zoom out"      onClick={()=>zoomBack(id,layout)}><i className="fas fa-search-minus" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="pan"            onClick={()=>pan(id,layout)}><i className="fas fa-hand-rock" style={{color:"white"}}></i></button> 
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="download image" onClick={()=>downloadImage(id)}><i className="fas fa-camera" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="save" onClick={this.save}><i className="fas fa-save" style={{color:"white"}}></i></button>
+                                  <button className="btn setgraph btn-sm btn-primary m-1" data-toggle="tooltip" data-placement="top" title="new sheet" onClick={this.newBoard}><i className="fas fa-file" style={{color:"white"}}></i></button>
                               </div> 
+
+                                <Alert info={pk}/>
 
                               <div className="card w-50 ml-5 mt-3 mb-3" style={saveShow}>
                                       <div className="card-body">
@@ -224,6 +234,8 @@ class Boxtools  extends Component {
                                                   </div>
                                       </div>
                               </div>
+
+                               
   
                       </div>
   
@@ -240,7 +252,8 @@ class Boxtools  extends Component {
                 username:     state.profile.username,
                 select:       state.workpaper.select,
                 workpaper    : state.workpaper.Workpaper,
-                change        : state.workpaper.change
+                change        : state.workpaper.change,
+              
     };
   };
   

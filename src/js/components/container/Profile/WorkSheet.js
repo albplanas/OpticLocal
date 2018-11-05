@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../../store/actions';
 import axios from 'axios';
+import Alert from './../DashBoard/Alert'
 
 class WorkSheet extends Component{
 
@@ -13,7 +14,8 @@ class WorkSheet extends Component{
                 worksheet:[],
                 mode:[],
                 username:"",
-                select:0
+                select:0,
+                del:false
 
         }
 
@@ -97,6 +99,8 @@ class WorkSheet extends Component{
                         
 
                 }) 
+
+               
         }
 /****************************************************
  *                  Delete
@@ -128,7 +132,7 @@ class WorkSheet extends Component{
                   }
               }
 
-       
+              
 
               this.props.DeleteProject(arr,select)
               
@@ -138,6 +142,16 @@ class WorkSheet extends Component{
                         
 
                 }) 
+                this.setState({
+                    del   :true,
+                   
+              })
+                setTimeout(()=>{
+                    this.setState({
+                        del   :false,
+                       
+                  })
+                }, 3000);
             }
 
             
@@ -249,7 +263,7 @@ componentWillMount() {
     
      
 
-         if(nextProps.change){
+         if(nextProps.ProfileChange===true){
            
             this.setState({
                 worksheet:      nextProps.workpaper,
@@ -268,11 +282,16 @@ componentWillMount() {
 
         render(){
             var Sheets= this.state.worksheet;
+            var pk= {
+                LoginAlert:false,
+                SuccessAlert:false,
+                DeleteAlert :this.state.del
+               } 
             
             return (
         
                     <div className="container-fluid">
-                         
+                         <Alert info={pk}/>
                          {Sheets.map((elem,index)=>{
                            return this.Card(elem,index,this.state.mode[index])
                          })}
@@ -290,7 +309,8 @@ componentWillMount() {
             workpaper     : state.workpaper.Workpaper,
             change        : state.workpaper.change,
             select        : state.workpaper.select,
-            username      : state.profile.username
+            username      : state.profile.username,
+            ProfileChange : state.workpaper.ProfileChange
         };
       };
       

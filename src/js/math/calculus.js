@@ -1,4 +1,4 @@
-var {Interacction_by_Reflexion,Interacction_by_Refraction} = require('./Interaction')
+var {Interacction_by_Reflexion,Interacction_by_Refraction,Interacction_by_Absorption} = require('./Interaction')
 var { Distance} = require('./func');
 var {Segment_intercept, Arc_intercept} =require("./Intercepts")
 
@@ -55,6 +55,9 @@ function ToObject(device){
         arr=arr.concat(Superfice(device.x_origen,device.y_origen,device.slope,device.radius_back ,device.longitud,"Refraction")) ;
         arr[0].indexRefraction = device.indexRefraction;
         } 
+      if(device.fn==="diaphragm") {
+        arr=arr.concat(Superfice(device.x_origen,device.y_origen,device.slope,device.radius,device.longitud,"Absorption")) 
+      } 
 
     return arr
 }
@@ -125,7 +128,7 @@ function Calcule_Haz_interaction(haz,dvc){
                 var dvc_select = dvc[Trackers.track.dvc];
                 var Superf_select= Trackers.track.superf;
 
-               
+              
 
               if( type=== "Reflexion") {
                     
@@ -135,20 +138,33 @@ function Calcule_Haz_interaction(haz,dvc){
                else if( type  === "Refraction")  { 
                   
                    kids = Interacction_by_Refraction(ray, dvc_select, Intercept_dvc, Superf_select) ;
-
-                }  
+                   
+                } 
+                else if( type  === "Absorption")  { 
+                  
+                    kids = Interacction_by_Absorption(ray, dvc_select, Intercept_dvc, Superf_select) ;
+                    
+                 }  
         }
 
    
 
                  if(   kids.length === 0  ) {return  []} 
+                 
                  else {
                     
                     All_children= All_children.concat(kids);
                     
                     for(var i=0;i<kids.length;i++){
+
+                                if(kids[i].name==="Absorption"){
+                                    continue
+                                }
+                                else{
+                                    All_children=All_children.concat(Calcule_Haz_interaction(kids[i],dvc))
+                                }
                             
-                            All_children=All_children.concat(Calcule_Haz_interaction(kids[i],dvc))
+                           
 
                         }
 
@@ -171,6 +187,8 @@ function Calcule_Haz_interaction(haz,dvc){
 
     //Standard the entrie values
   let devices = dvc.map(elem => ToObject(elem));
+
+ 
 
   var container= src.map( source => Calcule_Haz_interaction(source,devices) );
 

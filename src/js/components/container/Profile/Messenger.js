@@ -40,8 +40,10 @@ class Messenger extends Component {
   render(){
             return (
                 <div>
-                    
-                         There aren't any message for you now 
+                    <div class="alert alert-danger w-100 text-center" role="alert" >
+                    There aren't any message for you now!
+                              </div>
+                          
                 </div>
             )
 

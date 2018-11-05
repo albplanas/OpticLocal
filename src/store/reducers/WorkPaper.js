@@ -36,6 +36,9 @@ const  Model={
 const initialState = {
     change:false,
     Datachange:false,
+    EditChange:false,
+    ProfileChange:false,
+
     select: 0,
    
     Workpaper:[
@@ -49,63 +52,62 @@ const reducer = (state = initialState, action) => {
 
         case actionTypes.ADDFUNCTION:
 
-                    var Wp = state.Workpaper;
+   
+                   
+                 return {
+                                    ...state,
+                                    Workpaper:action.Wp,
+                                    Datachange:true,
+                                    change:true,
+                                    EditChange:true
+                                } 
 
-                     if(action.properties.fn==="haz"){
-                        Wp[state.select].sources =  Wp[state.select].sources .concat(action.properties);
-                     }
-                     else{
-                        Wp[state.select].devices  =  Wp[state.select].devices .concat(action.properties);
-                     }
-                     return {
-                        ...state,
-                        Workpaper:Wp,
-                        Datachange:true
-                    } 
+        case actionTypes.UPDATEDATE:
+
+
+                     return  {
+                                    ...state,
+                                    Datachange:false,
+                                    change:false,
+                                    EditChange:false
+                                }
+
 
 
         case actionTypes.DELETEFUNCTION:
 
-                    var Wp = state.Workpaper;
-                    Wp[state.select].sources =  Wp[state.select].sources.filter( src =>  src.id.toString() !== action.id.toString());
-
-                    Wp[state.select].devices =  Wp[state.select].devices.filter( src =>  src.id.toString() !== action.id.toString());
+                   
 
                     return {
                                             ...state,
-                                            Workpaper: Wp,
-                                            Datachange:true
+                                            Workpaper: action.Wp,
+                                            Datachange:true,
+                                            change:true,
+                                            EditChange:true
                                         }
                     
         
         case actionTypes.EDITFUNCTION:
-                       
-                    var Wp = state.Workpaper;
                                         
-                    Wp[state.select].sources = Wp[state.select].sources.map(elem => {
-                                           
-                                            return elem.id.toString()===action.id.toString()? action.properties :elem
-                                        } );
-          
-                    Wp[state.select].devices = Wp[state.select].devices.map(elem => {
-                                           
-                                            return elem.id.toString()===action.id.toString()? action.properties :elem
-                                        } );
-                                      
+  
+                    
                     return {
                                             ...state,
-                                            Workpaper: Wp,
-                                            Datachange:true
+                                            Workpaper: action.Wp,
+                                            Datachange:true,
+                                            change:true,
+                                            EditChange:true
                                         }                                   
 
 
         case actionTypes.PAPERS:
-                                                        
+                             console.log(action.papers)                           
                             return {
                                 ...state,
                                 Workpaper:action.papers.length > 0 ? action.papers: state.Workpaper ,
                                 change:true,
-                                Datachange:true
+                                Datachange:true,
+                                ProfileChange:true
                                 
                             } 
                             
@@ -113,20 +115,21 @@ const reducer = (state = initialState, action) => {
                                                         
                             return {
                                 ...state,
-                                change : action.val
+                                change : action.val,
+                                ProfileChange:false
                             }  
 
         case actionTypes.NEWTITLE:
         
-                               
-                                var l = state.Workpaper.length
-
+                               var Update = state.Workpaper.map((elem)=>elem).concat(Model)
+                                
+                              
                                 return {
                                     ...state,
-                                    Workpaper :state.Workpaper.concat( Model),
-                                    select:l,
-                                    change:true,
-                                    Datachange:true
+                                    Workpaper :     Update,
+                                    select:         Update.length-1,
+                                    change:         true,
+                                    Datachange:     true
 
                                 } 
        case actionTypes.EDITTILE:
@@ -147,11 +150,12 @@ const reducer = (state = initialState, action) => {
                                     }    
        
       case actionTypes.DELETEPROJECT:
-           console.log("Delete",action)
+           
                         return {
                             ...state,
                             change : true,
                             Datachange:true,
+                            ProfileChange:true,
                             select:     action.Wp.length > 0 ? action.value :0,
                             Workpaper: action.Wp.length > 0 ? action.Wp :[Model]
                         }  
@@ -159,7 +163,7 @@ const reducer = (state = initialState, action) => {
                  
 
        case actionTypes.CLEANDATA:
-
+           
                                     return {
                                         ...state,
                                         change : true,
